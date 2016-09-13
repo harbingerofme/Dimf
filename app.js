@@ -170,6 +170,7 @@ Client.on("message", (msg) => {
         //do regex matching for enimaging, then attach card if able, if multiple, try to do a mc.info link?
     }catch(e){
         console.log(e);
+        assertServerDataS(msg.guild.id)
     }}else{//private message
         //check if it has start modifier "oracle" (or "image", but ignore it)
         //try and search it, if true, give image or names if multiple
