@@ -84,6 +84,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 .vscode/
-config/
-data/
-*.json
+config/config.json
+data/*.zip
+data/*.json
+
