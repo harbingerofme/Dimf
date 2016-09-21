@@ -272,11 +272,12 @@ Client.on("message", (msg) => {
     updateList();
     if(msg.guild != undefined && msg.guild != null){
     try{
-        if(msg.content.startsWith(`<@${Client.user.id}> `) || (servers[msg.guild.id].search!= "" && msg.content.startsWith(servers[msg.guild.id].search)))
+        if(msg.content.startsWith(`<@${Client.user.id}> `) || msg.content.startsWith(`<@!${Client.user.id}> `) || (servers[msg.guild.id].search!= "" && msg.content.startsWith(servers[msg.guild.id].search)))
             {
                 var defaultFailText = "I found no cards like that!";
                 var result;
                 var stuff = msg.content.replace(`<@${Client.user.id}> `,"");
+                var stuff = msg.content.replace(`<@!${Client.user.id}> `,"");
                 stuff = stuff.replace(servers[msg.guild.id].search,"");
                 var splits = stuff.split(" ");
                 var cbs = {scb : (x)=>{},mcb : (x)=>{},fcb: (x) => {return defaultFailText;}};
