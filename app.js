@@ -268,52 +268,60 @@ function updateList()
     }
 }
 
+function handleInput(stuff,msg)
+{
+    let defaultFailText = "I found no cards like that!";
+    let result;
+    
+    let splits = stuff.split(" ");
+    let cbs = {scb : (x)=>{},mcb : (x)=>{},fcb: (x) => {return defaultFailText;}};
+    let def = false;
+    switch(splits.shift())
+    {
+        case "image":
+            cbs.scb = imageFromCard;
+            cbs.mcb = multipleLinks;
+        break;
+        default://walks into oracle
+            def = true;
+        case "oracle":
+            cbs.scb = oracleMessage;
+            cbs.mcb = multipleCardsMessage;
+        break;
+        case "rulings":
+            cbs.scb = rulingMessage;
+            cbs.mcb = multipleCardsMessage;
+        break;
+    }
+    if(!def)
+        stuff = splits.join(" ");
+    result = search(stuff,msg.author.id);
+    let output = handleSearch(result,msg.author.id,cbs.scb,cbs.mcb,cbs.fcb);
+    return [output,result];
+}
+
 Client.on("message", (msg) => {
-    updateList();
-    if(msg.guild != undefined && msg.guild != null){
-    try{
-        if(msg.content.startsWith(`<@${Client.user.id}> `) || msg.content.startsWith(`<@!${Client.user.id}> `) || (servers[msg.guild.id].search!= "" && msg.content.startsWith(servers[msg.guild.id].search)))
-            {
-                var defaultFailText = "I found no cards like that!";
-                var result;
-                var stuff = msg.content.replace(`<@${Client.user.id}> `,"");
-                var stuff = msg.content.replace(`<@!${Client.user.id}> `,"");
-                stuff = stuff.replace(servers[msg.guild.id].search,"");
-                var splits = stuff.split(" ");
-                var cbs = {scb : (x)=>{},mcb : (x)=>{},fcb: (x) => {return defaultFailText;}};
-                var def = false;
-                switch(splits.shift())
+    if(msg.author.id != Client.user.id){
+        updateList();
+        if(msg.guild != undefined && msg.guild != null){
+        try{
+            if(msg.content.startsWith(`<@${Client.user.id}> `) || msg.content.startsWith(`<@!${Client.user.id}> `) || (servers[msg.guild.id].search!= "" && msg.content.startsWith(servers[msg.guild.id].search)))
                 {
-                    case "image":
-                        cbs.scb = imageFromCard;
-                        cbs.mcb = multipleLinks;
-                    break;
-                    default://walks into oracle
-                        def = true;
-                    case "oracle":
-                        cbs.scb = oracleMessage;
-                        cbs.mcb = multipleCardsMessage;
-                    break;
-                    case "rulings":
-                        cbs.scb = rulingMessage;
-                        cbs.mcb = multipleCardsMessage;
-                    break;
+                    let stuff = msg.content.replace(`<@${Client.user.id}> `,"");
+                    stuff = msg.content.replace(`<@!${Client.user.id}> `,"");
+                    stuff = stuff.replace(servers[msg.guild.id].search,"");
+                    let output = handleInput(stuff,msg);
+                    msg.channel.sendMessage((output[0].length>1950)?`I found too many cards (${output[1].length}), please narrow down your search!`:output[0] );
                 }
-                if(!def)
-                    stuff = splits.join(" ");
-                result = search(stuff,msg.author.id);
-                var output = handleSearch(result,msg.author.id,cbs.scb,cbs.mcb,cbs.fcb)
-                msg.channel.sendMessage((output.length>1950)?`I found too many cards (${result.length}), please narrow down your search!`:output );
-            }
-        //do regex matching for encircling, then give oracle text for card(s), by more than 3 cards, only give card names.
-        //do regex matching for enimaging, then attach card if able, if multiple, try to do a mc.info link?
-    }catch(e){
-        console.log(e);
-        assertServerDataS(msg.guild.id)
-    }}else{//private message
-        //check if it has start modifier "oracle" (or "image", but ignore it)
-        //try and search it, if true, give image or names if multiple
-        //assume it's a card, so give image
+            //do regex matching for encircling, then give oracle text for card(s), by more than 3 cards, only give card names.
+            //do regex matching for enimaging, then attach card if able, if multiple, try to do a mc.info link?
+        }catch(e){
+            console.log(e);
+            assertServerDataS(msg.guild.id)
+        }}else{//private message
+            let output = handleInput(msg.content,msg);
+            msg.channel.sendMessage((output[0].length>1950)?`I found too many cards (${output[1].length}), please narrow down your search!`:output[0] );
+        }
     }
 })
 
