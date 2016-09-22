@@ -20,11 +20,11 @@ function checkVersion(cb){
     var temp = require("./data/version-new.json");
     if(temp.version == version.version){
         fs.unlink("./data/version-new.json",(x) => {});
-        reloadData();
         console.log("\tData is up to date!");
-        return;
+    }else{
+        console.log("\tData is outdated.");
     }
-    console.log("\tData is outdated.");
+    reloadData();
 }
 function reloadData()
 {
@@ -86,7 +86,7 @@ function search(searchstring, authorId)
         return userFoundCardslist[authorId].cards[Math.abs(searchstring)];
     }
 
-    var output = cards.find((x)=>{return x.name.toLowerCase()==searchstring && x.type!="token" && x.layout!="vanguard"});
+    var output = cards.find((x)=>{return x.name.toLowerCase()==searchstring.toLowerCase() && x.type!="token" && x.layout!="vanguard"});
     if(output != undefined)
         return output;
     else{
