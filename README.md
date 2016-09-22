@@ -9,15 +9,22 @@ Whenever a message is received, this happens:
 
   * By default, the bot ignores all messages on a server, except the ones who start with a mention to it.
      * People with the 'Manage Server' permission will be able to change this to allow a prefix. (for example '!')
-  * Then the bot looks at the first word (so a space after mention, or **directly** after prefix) and does one of the following things:
-    * **image** (or nothing): the bot posts a magicccards.info link to the most recent printing of the card.
-    * **oracle**: the bot posts the oracle text of a card, and it's legalites in different formats.
-      * If a format is not in the list, it's not legal because it never has been pritned in a set that is legal for that format.
-    * **rulings**: The bot posts rulings of the card, if any.\n";
-      * _If any of the above modes (image, oracle, rulings) returns multiple cards, the bot will try to give you a list of them._
-      * _You can then just use the number listed besides the card name, in any of the above modes (for example 'oracle 1' would give you the oracle text of the card with a (1) next to it.)_
-    * **help**: The bot will pm you a near copy of this checklist.
-    * **settings**: I'm working hard on making this do something.
+  * Messages handled are in the following one of the two following formats:
+    * `@mention <mode> <(partial) card name>`
+    * `<prefix><mode> <(partial) card name>`
+      * If the card name matches exactly, or there's only one match for that name, the bot will return that card
+      * If it matches multiple cards, the bot will try to give you a list of them.
+        * You can then just use the number listed besides the card name, in any of the searching modes. _(For example, 'oracle 1' would give you the oracle text of the card with a (1) next to it.)_
+    * Note that only searching modes require a card name.
+  * Then the bot looks at the first word to determine the mode (so a space after mention, or **directly** after prefix):
+    * Searching modes:
+      * **image** (or nothing): the bot posts a magicccards.info link to the most recent printing of the card.
+      * **oracle**: the bot posts the oracle text of a card, and it's legalites in different formats.
+        * If a format is not in the list, it's not legal because it never has been pritned in a set that is legal for that format.
+      * **rulings**: The bot posts rulings of the card, if any.
+    * Meta modes:  
+      * **help**: The bot will pm you a near copy of this checklist.
+      * **settings**: I'm working hard on making this do something.
 
 ## For server managers:
 
@@ -33,7 +40,7 @@ To setup the bot, do the following things:
   1. install [git] (https://git-scm.com/downloads), do `git clone https://github.com/harbingerofme/Dimf/ ` OR just download all files in this repo yourself.
   2. install [node v6](https://nodejs.org/).
   3. get the v9 version of discordjs module for node by using `npm i --save hydrabolt/discord.js#indev` in your project folder.
-  4. Rename the `config/config.json.example` to `config.json` and edit it with your token. [find it here](https://discordapp.com/developers/applications/me)
+  4. Rename the `config/config.json.example` to `config.json` and edit it with your token. [find your token here](https://discordapp.com/developers/applications/me)
   5. Download the following files  from [mtgjson.com](https://mtgjson.com) and place them in the data folder:
     * [version-full.json](https://mtgjson.com/json/version-full.json) and rename it to `version.json`
     * [allSetsArray-x.json](https://mtgjson.com/json/allSetsArray-x.json)
