@@ -136,7 +136,7 @@ function oracleMessage(card)
         output+="Starting loyalty: "+card.loyalty+"\n";
     if(card.layout == "vanguard")
         output+= `Modifiers: hand: ${card.hand}, life: ${card.life}`;
-    if(card.legalities.length>0){
+    if(card.hasOwnProperty("legalities") && card.legalities.length>0){
         output+="Legality: ";
         var temp = legality(card);
         for(var a= 0;a<temp.length;a++){
