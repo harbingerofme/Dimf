@@ -120,7 +120,8 @@ function handleSearch(searchResult, authorId, singletonCallback, multipleCallbac
             return nothingCallback(searchResult);
 }
 
-function oracleMessage(card){
+function oracleMessage(card)
+{
     output = `**__${card.name}__**, ${card.type}`;
     if(card.hasOwnProperty("manaCost"))
         output+= " "+card.manaCost//no mana cost? Don't care
@@ -145,7 +146,8 @@ function oracleMessage(card){
     return output;
 }
 
-function legality(card){
+function legality(card)
+{
     var legal = card.legalities;
     legal.sort((x,y) => {
         if(x.legality=="Legal") return -1;
@@ -242,7 +244,7 @@ function multipleLinks(cards, authorId)
             uri = "<"+uri+">";
         output+=`*${cards[a].name}*: ${uri} (${a})`;
     }
-    output+="\nFor an embedded version, try \"image <nr>\" *(omit the \\`<>\\`)* ";
+    output+="\nFor an embedded version, try \"<nr>\" *(omit the \\`<>\\`)* ";
     var timeout = (new Date().getTime()/1000/60)+5;
     userFoundCardslist[authorId] = {timeout: timeout , cards: cards};
     return output;
@@ -257,6 +259,31 @@ function rulingMessage(card)
     }else
         output+="No rulings, play card as written.";
     return output;
+}
+
+function getHelp(stuff, msg)
+{
+    let output = "Full documentaion, source code and invite link available on http://github.com/harbingerofme/Dimf/\n";
+    output += "By default, I ignore all messages on a server, except the ones who start with a mention to me.\n";
+    output += "People with the 'Manage Server' permission can change this to allow a prefix. (for example '!')\n";
+    output += "\n";
+    output += "Then I look at the first word (so space after mention, or **directly** after prefix) and do one of the following things:\n"
+    output += "**image** (or nothing): I post a mci link to the most recent printing of the image.\n"
+    output += "**oracle**: I wil post the oracle text of a card, and it's legalites in different formats\n";
+    output += "**rulings**: I will post rulings of a card, if any.\n";
+    output += "\t*If any of the above modes returns multiple cards, I will try to give you a list of them.\n";
+    output += "\tYou can then just use the number listed besides the card name, in any of the above modes (for example 'oracle 1' would give you the oracle text of the card with a (1) next to it.)*\n"
+    output += "**help**: I'll pm you this.\n";
+    output += "**settings**: My developer is working hard on this!\n";
+    msg.author.sendMessage(output);
+    if(msg.channel.guild != null)
+        return "Help has been dm'd to you!";
+    return "";
+}
+
+function settingsHandler(stuff, msg)
+{
+
 }
 
 function updateList()
@@ -275,15 +302,22 @@ function handleInput(stuff,msg)
     
     let splits = stuff.split(" ");
     let cbs = {scb : (x)=>{},mcb : (x)=>{},fcb: (x) => {return defaultFailText;}};
-    let def = false;
-    switch(splits.shift())
+    let def = false, doSearch =  true;
+    switch(splits.shift().toLowerCase())
     {
+        case "help":
+            if(splits.length == 0)//there's plenty of cards named help <x> or something.'
+            {
+                doSearch = false;
+                cbs.scb = getHelp;
+                break;
+            }
+        default://walks into image
+            def = true;
         case "image":
             cbs.scb = imageFromCard;
             cbs.mcb = multipleLinks;
         break;
-        default://walks into oracle
-            def = true;
         case "oracle":
             cbs.scb = oracleMessage;
             cbs.mcb = multipleCardsMessage;
@@ -292,11 +326,23 @@ function handleInput(stuff,msg)
             cbs.scb = rulingMessage;
             cbs.mcb = multipleCardsMessage;
         break;
+        
+        case "settings": 
+            doSearch = false;
+            cbs.scb = settingsHandler;
+        break;
     }
     if(!def)
         stuff = splits.join(" ");
-    result = search(stuff,msg.author.id);
-    let output = handleSearch(result,msg.author.id,cbs.scb,cbs.mcb,cbs.fcb);
+    let output ="";
+    if(doSearch)
+    {
+        result = search(stuff,msg.author.id);
+        output = handleSearch(result,msg.author.id,cbs.scb,cbs.mcb,cbs.fcb);
+    }else{
+        result = false;
+        output = cbs.scb(stuff,msg);
+    }
     return [output,result];
 }
 
@@ -309,7 +355,7 @@ Client.on("message", (msg) => {
                 {
                     let stuff = msg.content.replace(`<@${Client.user.id}> `,"");
                     stuff = msg.content.replace(`<@!${Client.user.id}> `,"");
-                    stuff = stuff.replace(servers[msg.guild.id].search,"");
+                    stuff = stuff.replace(servers[msg.guild.id].search,"");               
                     let output = handleInput(stuff,msg);
                     msg.channel.sendMessage((output[0].length>1950)?`I found too many cards (${output[1].length}), please narrow down your search!`:output[0] );
                 }
