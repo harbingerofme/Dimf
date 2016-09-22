@@ -8,7 +8,7 @@ Nothing spectacular, but it does it's job fine.
 Whenever a message is received, this happens:
 
   * By default, the bot ignores all messages on a server, except the ones who start with a mention to it.
-     *People with the 'Manage Server' permission can change this to allow a prefix. (for example '!')
+     * People with the 'Manage Server' permission will be able to change this to allow a prefix. (for example '!')
   * Then the bot looks at the first word (so a space after mention, or **directly** after prefix) and does one of the following things:
     * **image** (or nothing): the bot posts a magicccards.info link to the most recent printing of the card.
     * **oracle**: the bot posts the oracle text of a card, and it's legalites in different formats.
