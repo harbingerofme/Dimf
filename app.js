@@ -354,7 +354,7 @@ Client.on("message", (msg) => {
             if(msg.content.startsWith(`<@${Client.user.id}> `) || msg.content.startsWith(`<@!${Client.user.id}> `) || (servers[msg.guild.id].search!= "" && msg.content.startsWith(servers[msg.guild.id].search)))
                 {
                     let stuff = msg.content.replace(`<@${Client.user.id}> `,"");
-                    stuff = msg.content.replace(`<@!${Client.user.id}> `,"");
+                    stuff = stuff.replace(`<@!${Client.user.id}> `,"");
                     stuff = stuff.replace(servers[msg.guild.id].search,"");               
                     let output = handleInput(stuff,msg);
                     msg.channel.sendMessage((output[0].length>1950)?`I found too many cards (${output[1].length}), please narrow down your search!`:output[0] );
