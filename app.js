@@ -22,30 +22,19 @@ function checkVersion(cb){
         fs.unlink("./data/version-new.json",(x) => {});
         console.log("\tData is up to date!");
     }else{
-        console.log("\tData is outdated.");
+        console.log("\tData is outdated. Please run update.js");
     }
     reloadData();
 }
 function reloadData()
 {
-    cards = asociativeArrayToNormal(require("./data/AllCards-x.json"));    
+    cards = require("./data/cards.json");    
     version = require("./data/version.json");
-    sets = require("./data/AllSetsArray-x.json");
 }
 
-function asociativeArrayToNormal(input)
-{
-    var temp =[];
-    for(var a in input)
-    {
-        temp.push(input[a]);
-    }
-    return temp;
-}
 
 var version = {};
 var cards = {};
-var sets  = {};
 var servers;
 try{
     servers = require("./data/servers.json");
@@ -58,7 +47,7 @@ try{
     version = require("./data/version.json");
     download("http://mtgjson.com/json/version-full.json","./data/version-new.json",checkVersion);
 }catch(e){
-    console.log("\tNo version.json found, please provide the following files from mtgjson.com:\n\t\t./data/AllCards-x.json\n\t\t./data/version.json\n\t\t./data/AllSetsArray-x.json");
+    console.log("\tNo version.json found, please run update.js");
 }
 
 const Client = new Discord.Client();
@@ -69,14 +58,13 @@ function saveData(){
     fs.writeFile("./data/servers.json",jsonString,(e)=>{console.log(`${date.getDate()}/${(date.getMonth()<10)? "0"+date.getMonth() : date.getMonth()} ${date.getHours()}:${date.getMinutes()} saved data.`);});
 }
 
-function assertServerData(id, save){
+function assertServerData(id, save = true){
     if(servers[id] == undefined){
         servers[id] = {encircling: "[]",enimaging: "{}", search: ""};
         if(save)
             saveData();
     }
 }
-function assertServerDataS(id){assertServerData(id,true);}//overload.
 
 var userFoundCardslist = {};
 
@@ -96,11 +84,19 @@ function search(searchstring, authorId)
     }
     if(output.length>1){
         output.sort((x,y)=>{
-            if(x.printings.length>y.printings.length+5)
+            if(x.hasOwnProperty("mci") && y.hasOwnProperty("mci")){
+                if(x.mci.length>y.mci.length+5)
+                    return -1;
+                if(y.mci.length>x.mci.length+5 || x.name>y.name)
+                    return 1;
                 return -1;
-            if(y.printings.length>x.printings.length+5 || x.name>y.name)
-                return 1;
-            return -1;
+            }else{
+                if(x.hasOwnProperty("mci"))
+                    return -1;
+                if(y.hasOwnProperty("mci")||x.name>y.name)
+                    return 1;
+                return -1;
+            }
         });
         return output;
     }
@@ -203,30 +199,10 @@ function multipleCardsMessage(cards,userid)
 function imageFromCard(card)
 {
     var imageURL ="";
-    for(var a=card.printings.length-1;a>-1;a--){
-        var set = sets.find((x) => {return x.code == card.printings[a];});
-        if(set != undefined){
-            var setCard = set.cards.find((x) => {return x.name == card.name;});
-            if(set.hasOwnProperty("magicCardsInfoCode")){
-                if(setCard != undefined){
-                    if(setCard.hasOwnProperty("mciNumber")){
-                        imageURL = `http://magiccards.info/scans/en/${set.magicCardsInfoCode}/${setCard.mciNumber}.jpg`;
-                        break;
-                    }else{
-                        imageURL = `http://magiccards.info/scans/en/${set.magicCardsInfoCode}/${setCard.number}.jpg`;
-                    }
-                }
-            }else{
-                if(setCard != undefined){
-                    if(setCard.hasOwnProperty("mciNumber")){
-                        imageURL = `http://magiccards.info/scans/en/${set.code.toLowerCase()}/${setCard.mciNumber}.jpg`;
-                        break;
-                    }else{
-                        imageURL = `http://magiccards.info/scans/en/${set.code.toLowerCase()}/${setCard.number}.jpg`;
-                    }
-                }    
-            }
-        } 
+    if(card.hasOwnProperty("mci")){
+        for(var a=0;a<card.mci.length;a++){
+            imageURL = `http://magiccards.info/scans/en/${card.mci[a].setcode}/${card.mci[a].number}.jpg`;
+        }
     }
     if(imageURL == "")
         imageURL = "No printings found on magiccards.info."
@@ -263,9 +239,9 @@ function rulingMessage(card)
 
 function getHelp(stuff, msg)
 {
-    let output = "Full documentaion, source code and invite link available on http://github.com/harbingerofme/Dimf/\n";
+    let output = "Full documentation, source code and invite link available on http://github.com/harbingerofme/Dimf/\n";
     output += "By default, I ignore all messages on a server, except the ones who start with a mention to me.\n";
-    output += "People with the 'Manage Server' permission can change this to allow a prefix. (for example '!')\n";
+   // output += "People with the 'Manage Server' permission can change this to allow a prefix. (for example '!')\n";
     output += "\n";
     output += "Then I look at the first word (so space after mention, or **directly** after prefix) and do one of the following things:\n"
     output += "**image** (or nothing): I post a mci link to the most recent printing of the image.\n"
@@ -350,10 +326,11 @@ Client.on("message", (msg) => {
     if(msg.author.id != Client.user.id){
         updateList();
         if(msg.guild != undefined && msg.guild != null){
-        try{
+      //  try{
             if(msg.content.startsWith(`<@${Client.user.id}> `) || msg.content.startsWith(`<@!${Client.user.id}> `) || (servers[msg.guild.id].search!= "" && msg.content.startsWith(servers[msg.guild.id].search)))
                 {
                     let stuff = msg.content.replace(`<@${Client.user.id}> `,"");
+                    console.log(`${msg.guild}:${msg.author.username}#${msg.author.discriminator}:${stuff}`);
                     stuff = stuff.replace(`<@!${Client.user.id}> `,"");
                     stuff = stuff.replace(servers[msg.guild.id].search,"");               
                     let output = handleInput(stuff,msg);
@@ -361,17 +338,19 @@ Client.on("message", (msg) => {
                 }
             //do regex matching for encircling, then give oracle text for card(s), by more than 3 cards, only give card names.
             //do regex matching for enimaging, then attach card if able, if multiple, try to do a mc.info link?
-        }catch(e){
-            console.log(e);
-            assertServerDataS(msg.guild.id)
-        }}else{//private message
+       // }catch(e){
+       //     console.log(e);
+      //      assertServerData(msg.guild.id)
+      //  }
+    }else{//private message
+            console.log(`PRIVATE:${msg.author.username}#${msg.author.discriminator}:${msg.content}`)
             let output = handleInput(msg.content,msg);
             msg.channel.sendMessage((output[0].length>1950)?`I found too many cards (${output[1].length}), please narrow down your search!`:output[0] );
         }
     }
 })
 
-Client.on("ready", (x) => {console.log("Ready!")})
+Client.on("ready", (x) => {console.log("Ready as "+Client.user.username);Client.user.setGame("Try DM'ing me or \"help\"!")})
 
 
 Client.login(config.token);

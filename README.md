@@ -8,7 +8,7 @@ Nothing spectacular, but it does it's job fine.
 Whenever a message is received, this happens:
 
   * By default, the bot ignores all messages on a server, except the ones who start with a mention to it.
-     * People with the 'Manage Server' permission will be able to change this to allow a prefix. (for example '!')
+     * People with the 'Manage Server' permission will be able to change this to allow a prefix. (still working on it!)
   * Messages handled are in the following one of the two following formats:
     * `@mention <mode> <(partial) card name>`
     * `<prefix><mode> <(partial) card name>`
@@ -32,22 +32,18 @@ Invite the bot to your server by clicking [this link](https://discordapp.com/oau
 
 Raw: `https://discordapp.com/oauth2/authorize?client_id=191891486860771328&scope=bot&permissions=0`
 
-I'm working on making a customizable prefix available. Stay tuned for that.
-
 ## For people who want to host their own version:
 
 To setup the bot, do the following things:
   1. install [git] (https://git-scm.com/downloads), do `git clone https://github.com/harbingerofme/Dimf/ ` OR just download all files in this repo yourself.
   2. install [node v6](https://nodejs.org/).
-  3. get the v9 version of discordjs module for node by using `npm i --save hydrabolt/discord.js#indev` in your project folder.
+  3. get the discordjs module for node by using `npm i --save hydrabolt/discord.js` in your project folder. (Last tested on v10)
   4. Rename the `config/config.json.example` to `config.json` and edit it with your token. [find your token here](https://discordapp.com/developers/applications/me)
-  5. Download the following files  from [mtgjson.com](https://mtgjson.com) and place them in the data folder:
-    * [version-full.json](https://mtgjson.com/json/version-full.json) and rename it to `version.json`
-    * [allSetsArray-x.json](https://mtgjson.com/json/allSetsArray-x.json)
-    * [AllCards-x.json](https://mtgjson.com/json/AllCards-x.json)
+  5. Update the card database with `node update`. This will download the about 70 MB of data from mtgjson.com and reduce it to ~17 MB. This step can be heavy for lighterweight servers.
   6. Run the bot with `node app` while in the root of the project folder.
   7. Invite it to your server with `https://discordapp.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot` where `YOUR_CLIENT_ID` is the client id found on your application page.
 
-You can update the bot with `git pull` if you cloned it.
+You can update the bot to the latest code with `git pull` if you cloned it.
+Updating the card database is done with `node update`. You only need to run this whenever a new set releases or so.
 
 Feel free to reuse anything from this project, but I'd appreciate it if you linked me what you do with it!
