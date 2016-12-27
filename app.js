@@ -326,23 +326,23 @@ Client.on("message", (msg) => {
     if(msg.author.id != Client.user.id){
         updateList();
         if(msg.guild != undefined && msg.guild != null){
-      //  try{
-            if(msg.content.startsWith(`<@${Client.user.id}> `) || msg.content.startsWith(`<@!${Client.user.id}> `) || (servers[msg.guild.id].search!= "" && msg.content.startsWith(servers[msg.guild.id].search)))
-                {
-                    let stuff = msg.content.replace(`<@${Client.user.id}> `,"");
-                    console.log(`${msg.guild}:${msg.author.username}#${msg.author.discriminator}:${stuff}`);
-                    stuff = stuff.replace(`<@!${Client.user.id}> `,"");
-                    stuff = stuff.replace(servers[msg.guild.id].search,"");               
-                    let output = handleInput(stuff,msg);
-                    msg.channel.sendMessage((output[0].length>1950)?`I found too many cards (${output[1].length}), please narrow down your search!`:output[0] );
-                }
-            //do regex matching for encircling, then give oracle text for card(s), by more than 3 cards, only give card names.
-            //do regex matching for enimaging, then attach card if able, if multiple, try to do a mc.info link?
-       // }catch(e){
-       //     console.log(e);
-      //      assertServerData(msg.guild.id)
-      //  }
-    }else{//private message
+            try{
+                if(msg.content.startsWith(`<@${Client.user.id}> `) || msg.content.startsWith(`<@!${Client.user.id}> `) || (servers[msg.guild.id].search!= "" && msg.content.startsWith(servers[msg.guild.id].search)))
+                    {
+                        let stuff = msg.content.replace(`<@${Client.user.id}> `,"");
+                        console.log(`${msg.guild}:${msg.author.username}#${msg.author.discriminator}:${stuff}`);
+                        stuff = stuff.replace(`<@!${Client.user.id}> `,"");
+                        stuff = stuff.replace(servers[msg.guild.id].search,"");               
+                        let output = handleInput(stuff,msg);
+                        msg.channel.sendMessage((output[0].length>1950)?`I found too many cards (${output[1].length}), please narrow down your search!`:output[0] );
+                    }
+                //do regex matching for encircling, then give oracle text for card(s), by more than 3 cards, only give card names.
+                //do regex matching for enimaging, then attach card if able, if multiple, try to do a mc.info link?
+            }catch(e){
+                console.log(e);
+                assertServerData(msg.guild.id)
+            }
+        }else{//private message
             console.log(`PRIVATE:${msg.author.username}#${msg.author.discriminator}:${msg.content}`)
             let output = handleInput(msg.content,msg);
             msg.channel.sendMessage((output[0].length>1950)?`I found too many cards (${output[1].length}), please narrow down your search!`:output[0] );
