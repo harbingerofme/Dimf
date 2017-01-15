@@ -307,6 +307,26 @@ function handleInput(stuff,msg)
             doSearch = false;
             cbs.scb = settingsHandler;
         break;
+
+        case "eval":
+            if(msg.author.id == "98460699696574464"){
+                doSearch = false;
+                try{
+                    console.log("EVAL: "+ eval(splits.join(" ")));
+                    cbs.scb = function(x,y){return "Eval executed.";};
+                }
+                catch(e)
+                {
+                    cbs.scb = function(x,y){return "Eval failed: "+e;};
+                }
+            }
+            else
+            {
+                def = true;
+                cbs.scb = imageFromCard;
+                cbs.mcb = multipleLinks;
+            }
+        break;
     }
     if(!def)
         stuff = splits.join(" ");
