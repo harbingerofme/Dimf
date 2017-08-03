@@ -72,38 +72,40 @@ function reduceFile(){
         {
             for(let card in set.cards)
             {
-                name = set.cards[card].name;
-                if(set.cards[card].types.includes("Plane"))
-                    setCard(name,10);
-                else
-                if(set.cards[card].types.includes("Phenomenon"))
-                    setCard(name,11);
-                else
-                if(set.cards[card].types.includes("Vanguard"))
-                    setCard(name,12);
-                else
-                if(set.cards[card].types.includes("Scheme"))
-                    setCard(name,13);
-                else
-                if(set.cards[card].types.includes("Conspiracy"))
-                    setCard(name,14);
-                else
-                if(legal.banned.includes(name))
-                    setCard(name,2);//banned
-                else
-                if( (legal.restricted.includes(name)  || legal.kitbashrestricted.includes(name) ) && ! legal.kitbashunrestricted.includes(name))
-                    setCard(name,1);//restricted
-                else
-                    setCard(name,0);//legal!
+                if(! set.cards[card].type.includes("Token"))
+                {
+                    name = set.cards[card].name;
+                    if(set.cards[card].types.includes("Plane"))
+                        setCard(name,10);
+                    else
+                    if(set.cards[card].types.includes("Phenomenon"))
+                        setCard(name,11);
+                    else
+                    if(set.cards[card].types.includes("Vanguard"))
+                        setCard(name,12);
+                    else
+                    if(set.cards[card].types.includes("Scheme"))
+                        setCard(name,13);
+                    else
+                    if(set.cards[card].types.includes("Conspiracy"))
+                        setCard(name,14);
+                    else
+                    if(legal.banned.includes(name))
+                        setCard(name,2);//banned
+                    else
+                    if( (legal.restricted.includes(name)  || legal.kitbashrestricted.includes(name) ) && ! legal.kitbashunrestricted.includes(name))
+                        setCard(name,1);//restricted
+                    else
+                        setCard(name,0);//legal!
+                }
             }
         }
         else
         {
             for(let card in set.cards)
             {
-                let temp = set.cards[card].name;
-                let temp2 = set.name;
-                addIllegalCard(set.cards[card].name);
+                if(! set.cards[card].type.includes("Token"))
+                    addIllegalCard(set.cards[card].name);
             }
         }
     }
@@ -111,11 +113,11 @@ function reduceFile(){
 }
 
 function addIllegalCard(name){
-    if(cards.hasOwnProperty(name.toLowerCase()) == false)
+    if(cards.hasOwnProperty(name) == false)
         setCard(name,3);
 }
     
 function setCard(name,legality)
 {
-    cards[name.toLowerCase()] = legality;
+    cards[name] = legality;
 }
