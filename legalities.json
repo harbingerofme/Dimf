@@ -1,0 +1,96 @@
+{
+    "sets":
+    [
+        "S99", 
+        "S00", 
+        "BRB", 
+        "BTD", 
+        "HOP", 
+        "PC2", 
+        "ARC", 
+        "E01", 
+        "CMD", 
+        "C13", 
+        "C14", 
+        "C15", 
+        "C16", 
+        "C17", 
+        "CNS", 
+        "CN2", 
+        "H09", 
+        "PD2", 
+        "PD3", 
+        "EVG"  
+    ],
+    "dueldecks": ["2","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S"], 
+    "banned":
+    [
+        "Chaos Orb",
+        "Falling Star",
+        "Shahrazad",
+        "Amulet of Quoz",
+        "Bronze Tablet",
+        "Contract from Below",
+        "Darkpact",
+        "Demonic Attorney",
+        "Jeweled Bird",
+        "Rebirth",
+        "Tempest Efreet",
+        "Timmerian Fiends"
+    ],
+    "restricted":
+    [
+		"Ancestral Recall",
+		"Balance",
+		"Black Lotus",
+		"Brainstorm",
+		"Chalice of the Void",
+		"Channel",
+		"Demonic Consultation",
+		"Demonic Tutor",
+		"Dig Through Time",
+		"Fastbond",
+		"Flash",
+		"Imperial Seal",
+		"Library of Alexandria",
+		"Lion's Eye Diamond",
+		"Lodestone Golem",
+		"Lotus Petal",
+		"Mana Crypt",
+		"Mana Vault",
+		"Memory Jar",
+		"Merchant Scroll",
+		"Mind's Desire",
+		"Mox Emerald",
+		"Mox Jet",
+		"Mox Pearl",
+		"Mox Ruby",
+		"Mox Sapphire",
+		"Mystical Tutor",
+		"Necropotence",
+		"Ponder",
+		"Sol Ring",
+		"Strip Mine",
+		"Time Vault",
+		"Time Walk",
+		"Timetwister",
+		"Tinker",
+		"Tolarian Academy",
+		"Treasure Cruise",
+		"Trinisphere",
+		"Vampiric Tutor",
+		"Wheel of Fortune",
+		"Windfall",
+		"Yawgmoth's Bargain",
+		"Yawgmoth's Will"
+    ],
+    "kitbashrestricted":
+    [
+        "Dark Ritual",
+        "Entomb"
+    ],
+    "kitbashunrestricted":
+    [
+        "Brainstorm"
+    ]
+}

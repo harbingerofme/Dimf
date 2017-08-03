@@ -17,94 +17,100 @@ function download(name, dest, cb) {
     );
 };
 
+var cards = {};
+var sets = {};
+var legal = require("./legalities.json");
+console.log("Downloading file, this might take a while.");
+download("AllSetsArray","ASA.json",downloadComplete());
 
 
-function proceedIfBothComplete()
+function downloadComplete()
 {
     
-    downloads++;
-    console.log("Downloads: "+downloads*50+"%");
-    if(downloads==2)
-    {
-        console.log("Merging files...");
         try{
-            sets = require("./ASAx.json");
+            sets = require("./ASA.json");
         }
         catch(e){
-            console.log("Something went wrong with AllSetsArray-x.json. Redownloading.");
-            downloads--;
-            download("AllSetsArray-x","ASAx.json",proceedIfBothComplete);
+            console.log(e)
+            console.log("Something went wrong with AllSetsArray.json. Redownloading.");
+//            download("AllSetsArray","ASA.json",downloadComplete);
             return;
         }
-        try{
-            cards = require("./ACx.json");
-        }
-        catch(e){
-            console.log("Something went wrong with AllCards-x.json. Redownloading.");
-            downloads--;
-            download("AllCards-x","ACx.json",proceedIfBothComplete);
-        }
 
-        mergeFiles();
+        reduceFile();
         sets = null;//free memory (about 400MB)
         console.log("Deleting tempory file");
-        fs.unlink("ASAx.json");//delete the file.
-        reduceCardObjectAndConvertToNormalArray();
+        fs.unlink("ASA.json");//delete the file.
         console.log("Saving cards array.");
         fs.writeFile("./data/cards.json",JSON.stringify(cards));
-        console.log("Deleting temporary file");
-        fs.unlink("ACx.json");
         console.log("Updating version number");
         download("version-full","./data/version.json",null);
         console.log("Update complete!");
-    }
 }
 
-function mergeFiles(){
-    console.log("Merging files...")
+
+function reduceFile(){
+    console.log("Reducing file...")
     for(let set_name in sets)
     {
         let set = sets[set_name];
-        if(set.hasOwnProperty("magicCardsInfoCode"))
+        let setcode = set.code;
+        if(
+            legal.sets.includes(setcode)
+            ||
+            ( 
+                setcode.startsWith("DD") 
+                &&
+                legal.dueldecks.includes(setcode.charAt(2))
+            )
+          )
         {
-            mci_set = set["magicCardsInfoCode"];
             for(let card in set.cards)
             {
-                updateMCI(set.cards[card].name,mci_set,set.cards[card].mciNumber);
+                name = set.cards[card].name;
+                if(set.cards[card].types.includes("Plane"))
+                    setCard(name,10);
+                else
+                if(set.cards[card].types.includes("Phenomenon"))
+                    setCard(name,11);
+                else
+                if(set.cards[card].types.includes("Vanguard"))
+                    setCard(name,12);
+                else
+                if(set.cards[card].types.includes("Scheme"))
+                    setCard(name,13);
+                else
+                if(set.cards[card].types.includes("Conspiracy"))
+                    setCard(name,14);
+                else
+                if(legal.banned.includes(name))
+                    setCard(name,2);//banned
+                else
+                if( (legal.restricted.includes(name)  || legal.kitbashrestricted.includes(name) ) && ! legal.kitbashunrestricted.includes(name))
+                    setCard(name,1);//restricted
+                else
+                    setCard(name,0);//legal!
+            }
+        }
+        else
+        {
+            for(let card in set.cards)
+            {
+                let temp = set.cards[card].name;
+                let temp2 = set.name;
+                addIllegalCard(set.cards[card].name);
             }
         }
     }
     console.log("Done!");
 }
 
-function updateMCI(name,set,mciNumber){
-    try{
-    if( ! cards[name].hasOwnProperty("mci"))
-        cards[name].mci = [];
-    cards[name].mci.push({setcode:set,number:mciNumber});
-    }
-    catch(e){
-        console.log(`Error updating MCI: ${name} :: ${set} :: ${mciNumber}`);
-    }
-} 
-
-function reduceCardObjectAndConvertToNormalArray(){
-    console.log("Reducing and transforming cards object.");
-    var temp =[];
-    for(let a in cards)
-    {
-        delete cards[a].imageName;
-        delete cards[a].printings;//This is contained in "mci" now
-        temp.push(cards[a]);
-    }
-    cards = temp;
-    console.log("Done!");
+function addIllegalCard(name){
+    if(cards.hasOwnProperty(name.toLowerCase()) == false)
+        setCard(name,3);
 }
-
-console.log("Downloading files, this might take a while.");
-var downloads = 0;
-console.log("Downloads: "+downloads*50+"%");
-download("AllSetsArray-x","ASAx.json",proceedIfBothComplete);
-download("AllCards-x","ACx.json",proceedIfBothComplete);
-var sets = {};
-var cards = {};
+    
+function setCard(name,legality)
+{
+    cards[name.toLowerCase()] = legality;
+}

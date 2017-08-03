@@ -1,0 +1,49 @@
+{
+    "404":
+    [
+        "That card might have been stolen by ninjas.",
+        "I can't find what you can't spell."
+    ],
+    "legal":
+    [
+        "$NAME is legal, have fun with it!",
+        "$NAME is alright!"
+    ],
+    "restricted":
+    [
+        "$NAME is restricted, be careful with it.",
+        "Enjoy \"$NAME\", but only in small portions. (restricted)"
+    ],
+    "banned":
+    [
+        "Don't even think about using $NAME. (banned)"
+    ],
+    "illegal":
+    [
+        "$NAME is not in the format.",
+        "Sorry, hun, you gotta wait for a reprint. (not legal)"
+    ],
+    "plane":
+    [
+        "$NAME is a plane, planning a vacation?",
+        "You might be a Planeswalker, but putting planes in your deck is not allowed."
+    ],
+    "conspiracy":
+    [
+        "The walls close in, the shadows whisper of conspiracy!",
+        "$NAME is an inside job."
+    ],
+    "vanguard":
+    [
+        "$NAME is a vanguard. Momir Basic when?",
+        "$NAME is a vanguard, which is like a commander but annoying in paper."
+    ],
+    "phenomenon":
+    [
+        "Phenomemnomaemmaminon"
+    ],
+    "scheme":
+    [
+        "What are you up to over there, scheming and plotting?"
+    ]
+}
