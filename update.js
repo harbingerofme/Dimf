@@ -2,6 +2,7 @@ const http = require("http");
 const fs = require("fs");
 
 function download(name, dest, cb) {
+    downloadCount++;
     let file = fs.createWriteStream(dest);
     let request = http.get({host:"mtgjson.com",path:"/json/"+name+".json",timeout:2*60*1000}, 
         function(response) {
@@ -24,16 +25,20 @@ console.log("Downloading file, this might take a while.");
 download("AllSetsArray","ASA.json",downloadComplete());
 
 
+var downloadCount = 0;
+
 function downloadComplete()
-{
-    
+{   
         try{
             sets = require("./ASA.json");
         }
         catch(e){
             console.log(e)
             console.log("Something went wrong with AllSetsArray.json. Redownloading.");
-//            download("AllSetsArray","ASA.json",downloadComplete);
+            if(downloadCount<5)
+                download("AllSetsArray","ASA.json",downloadComplete);
+            else
+                Enviroment.exit(0);
             return;
         }
 
